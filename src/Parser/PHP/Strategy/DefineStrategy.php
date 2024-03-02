@@ -55,7 +55,7 @@ final class DefineStrategy implements StrategyInterface
         if ($node instanceof Node\Stmt\ClassConst) {
             $constants = [];
             foreach ($node->consts as $i => $const) {
-                if ($const->namespacedName) {
+                if (isset($const->namespacedName)) {
                     // only specialized \ComposerUnused\SymbolParser\Parser\PHP\NameResolver
                     // is able to resolve full qualified class constant name
                     $constants[] = $const->namespacedName->toString();
