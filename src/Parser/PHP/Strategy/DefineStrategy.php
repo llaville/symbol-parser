@@ -19,10 +19,12 @@ final class DefineStrategy implements StrategyInterface
         if (
             $node instanceof Node\Stmt\Namespace_ ||
             $node instanceof Node\Stmt\ClassLike ||
-            $node instanceof Node\Stmt\Function_ ||
-            $node instanceof Node\Const_
+            $node instanceof Node\Stmt\Function_
         ) {
             return (null !== $node->name);
+        }
+        if ($node instanceof Node\Stmt\ClassConst) {
+            return true;
         }
         if ($node instanceof Node\Stmt\Expression && $node->expr instanceof Node\Expr\FuncCall) {
             return true;
@@ -50,9 +52,16 @@ final class DefineStrategy implements StrategyInterface
             return [$function];
         }
 
-        if ($node instanceof Node\Const_) {
-            $constant = $this->namespace . $node->name;
-            return [$constant];
+        if ($node instanceof Node\Stmt\ClassConst) {
+            $constants = [];
+            foreach ($node->consts as $i => $const) {
+                if ($const->namespacedName) {
+                    // only specialized \ComposerUnused\SymbolParser\Parser\PHP\NameResolver
+                    // is able to resolve full qualified class constant name
+                    $constants[] = $const->namespacedName->toString();
+                }
+            }
+            return $constants;
         }
 
         if (

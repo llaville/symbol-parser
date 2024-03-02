@@ -39,6 +39,15 @@ class NameResolver extends \PhpParser\NodeVisitor\NameResolver
             }
         }
 
+        if ($node instanceof Stmt\ClassConst) {
+            foreach ($node->consts as $i => $const) {
+                $node->consts[$i]->namespacedName = $nameContext->getResolvedName(
+                    new Name(['self', $const->name]),
+                    Stmt\Use_::TYPE_CONSTANT
+                );
+            }
+        }
+
         return null;
     }
 }
